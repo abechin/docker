@@ -21,7 +21,6 @@ build-token-root:1.4
 build-view-column:0.3
 build-with-parameters:1.4
 cloudbees-aborted-builds:1.9
-cloudbees-assurance:2.89.0.2
 cloudbees-aws-cli:1.5.7
 cloudbees-aws-credentials:1.8.4
 cloudbees-aws-deployer:1.17
