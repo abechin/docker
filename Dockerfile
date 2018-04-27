@@ -36,18 +36,24 @@ COPY init.groovy /usr/share/jenkins/ref/init.groovy.d/tcp-slave-agent-port.groov
 
 # jenkins version being bundled in this docker image
 ARG JENKINS_VERSION
-ENV JENKINS_VERSION ${JENKINS_VERSION:-2.19.2}
+#ENV JENKINS_VERSION ${JENKINS_VERSION:-2.19.2}
+ENV JENKINS_VERSION ${JENKINS_VERSION:-2.118}
 
 # jenkins.war checksum, download will be validated using it
-ARG JENKINS_SHA=32b8bd1a86d6d4a91889bd38fb665db4090db081
+#ARG JENKINS_SHA=32b8bd1a86d6d4a91889bd38fb665db4090db081
+# sha-1 for  version: 2.118
+ARG JENKINS_SHA=235a4243edf5cd8227d5bee8bb9c38a68b4083e9
+
 
 # Can be used to customize where jenkins.war get downloaded/copied from
-ARG JENKINS_URL=https://jenkins-updates.cloudbees.com/download/je/${JENKINS_VERSION}/jenkins.war
+#ARG JENKINS_URL=https://jenkins-updates.cloudbees.com/download/je/${JENKINS_VERSION}/jenkins.war
+ARG JENKINS_URL=2.118/jenkins-war-2.118.war
 
 # Copy the jenkins war and check the SHA
 ADD ${JENKINS_URL} /usr/share/jenkins/jenkins.war
 RUN echo "${JENKINS_SHA} /usr/share/jenkins/jenkins.war" | sha1sum -c -
 
+ENV CLOUDBEES_UC https://jenkins-updates.cloudbees.com
 ENV JENKINS_UC https://updates.jenkins.io
 RUN chown -R ${user} "$JENKINS_HOME" /usr/share/jenkins/ref
 
@@ -69,3 +75,5 @@ ENTRYPOINT ["/bin/tini", "--", "/usr/local/bin/jenkins.sh"]
 # from a derived Dockerfile, can use `RUN plugins.sh active.txt` to setup /usr/share/jenkins/ref/plugins from a support bundle
 COPY plugins.sh /usr/local/bin/plugins.sh
 COPY install-plugins.sh /usr/local/bin/install-plugins.sh
+COPY plugins.txt /plugins.txt
+RUN /usr/local/bin/plugins.sh /plugins.txt

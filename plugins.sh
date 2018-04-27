@@ -93,10 +93,20 @@ while read -r spec || [ -n "$spec" ]; do
       JENKINS_UC_DOWNLOAD=$JENKINS_UC/download
     fi
 
+    if [ -z "$CLOUDBEES_UC_DOWNLOAD" ]; then
+      CLOUDBEES_UC_DOWNLOAD=$CLOUDBEES_UC/download
+    fi
+
+    cloudbees_plugins=(cloudbees-aborted-builds cloudbees-assurance cloudbees-aws-cli cloudbees-aws-credentials cloudbees-aws-deployer cloudbees-blueocean-default-theme cloudbees-consolidated-build-view cloudbees-even-scheduler cloudbees-folders-plus cloudbees-groovy-view cloudbees-ha cloudbees-jsync-archiver cloudbees-label-throttling-plugin cloudbees-license cloudbees-long-running-build cloudbees-monitoring cloudbees-nodes-plus cloudbees-plugin-usage cloudbees-quiet-start cloudbees-secure-copy cloudbees-ssh-slaves cloudbees-support cloudbees-template cloudbees-update-center-installer-plugin cloudbees-view-creation-filter cloudbees-workflow-template cloudbees-workflow-ui git-validated-merge github-pull-request-build infradna-backup nectar-license nectar-rbac operations-center-agent operations-center-analytics-config operations-center-analytics-reporter operations-center-client operations-center-cloud operations-center-context operations-center-openid-cse sdlc-build-notifier-advanced skip-plugin wikitext workflow-cps-checkpoint)
+
     if ! grep -q "${plugin[0]}:${plugin[1]}" "$TEMP_ALREADY_INSTALLED"
     then
         echo "Downloading ${plugin[0]}:${plugin[1]}"
-        curl --retry 3 --retry-delay 5 -sSL -f "${JENKINS_UC_DOWNLOAD}/plugins/${plugin[0]}/${plugin[1]}/${plugin[0]}.hpi" -o "$REF/${plugin[0]}.jpi"
+        if [[ ${cloudbees_plugins[@]} =~ ${plugin[0]} ]]; then
+          curl --retry 3 --retry-delay 5 -sSL -f "${CLOUDBEES_UC_DOWNLOAD}/plugins/${plugin[0]}/${plugin[1]}/${plugin[0]}.hpi" -o "$REF/${plugin[0]}.jpi"
+        else
+          curl --retry 3 --retry-delay 5 -sSL -f "${JENKINS_UC_DOWNLOAD}/plugins/${plugin[0]}/${plugin[1]}/${plugin[0]}.hpi" -o "$REF/${plugin[0]}.jpi"
+        fi
         unzip -qqt "$REF/${plugin[0]}.jpi"
         (( COUNT_PLUGINS_INSTALLED += 1 ))
     else
